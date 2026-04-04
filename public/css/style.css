@@ -9,7 +9,7 @@ body{
     flex: 1;
 }
 
- .navbar{
+.navbar{
     height:5rem;
     background-color: white;
  }
@@ -54,7 +54,7 @@ body{
     justify-content: center;
 }
 
-.card{
+.listing-card{ 
     border:none !important;
     margin-bottom: 2rem;
 }
