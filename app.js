@@ -5,11 +5,15 @@ import { fileURLToPath } from "url";
 import methodOverride from "method-override";
 import ejsMate from "ejs-mate";
 import ExpressError from "./utils/ExpressError.js";
-import listings from "./routes/listing.js"
-import reviews from "./routes/review.js"
+import listingRouter from "./routes/listing.js"
+import userRouter from "./routes/user.js"
+import reviewRouter from "./routes/review.js"
 import session from "express-session"
 import flash from "connect-flash";
-
+import passport, { Passport } from "passport";
+import LocalStrategy from "passport-local";
+import User from "./models/user.js";
+ 
 const app = express();
 app.engine('ejs',ejsMate);
 async function main() {
@@ -44,6 +48,13 @@ const sessionOption = {
 app.use(session(sessionOption));
 app.use(flash());
 
+app.use(passport.initialize());
+app.use(passport.session())
+passport.use(new LocalStrategy(User.authenticate()));
+
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
 app.get("/",(req,res)=>{
     res.send("Working")
 });
@@ -54,8 +65,11 @@ app.use((req,res,next)=>{
     next();
 })
 
-app.use("/listings",listings)
-app.use("/listings/:id/reviews",reviews)
+
+
+app.use("/listings",listingRouter)
+app.use("/listings/:id/reviews",reviewRouter)
+app.use("/",userRouter)
 
 app.use((req, res, next) => {
   next(new ExpressError(404, "Page Not Found!!"));
