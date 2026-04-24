@@ -33,7 +33,11 @@ router.get("/:id", wrapAsync(async (req, res) => {
         return res.redirect("/listings");
     }
 
-    let listing = await Listing.findById(id).populate("reviews").populate("owner");
+    let listing = await Listing.findById(id)
+        .populate({path:"reviews",
+            populate:
+                {path:"author"}})
+        .populate("owner");
 
     // 🔥 Handle deleted / non-existing listing
     if (!listing) {
