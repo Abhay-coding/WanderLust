@@ -9,26 +9,28 @@ router.get("/signup" ,(req,res)=>{
     res.render("users/signup.ejs");
 })
 
-router.post("/signup", wrapAsync(async(req,res)=>{
-    try{
-        let {username,email,password} = req.body;
-        const newUser = new User({email,username});
-        const registeredUser = await User.register(newUser,password)
-        console.log(registeredUser);
-        req.login(registeredUser,(err)=>{
-            if(err){
-                return next(err);
-            }
-            req.flash("success","Welcome to WanderLust");
-            res.redirect(req.session.redirectUrl);
-        })
-        
+router.post("/signup", wrapAsync(async (req, res, next) => {
+    try {
+        let { username, email, password } = req.body;
+
+        const newUser = new User({ email, username });
+        const registeredUser = await User.register(newUser, password);
+
+        req.login(registeredUser, (err) => {
+            if (err) return next(err);
+
+            req.flash("success", "Welcome to WanderLust");
+
+            const redirectUrl = req.session.returnTo || "/listings";
+            delete req.session.returnTo;
+
+            res.redirect(redirectUrl);
+        });
+
+    } catch (e) {
+        req.flash("error", e.message);
+        res.redirect("/signup");
     }
-    catch(e){
-        req.flash("error",e.message);
-        res.redirect("/signup")
-    }
-    
 }));
 
 router.get("/login",(req,res)=>{

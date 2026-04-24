@@ -6,17 +6,8 @@ import { listingSchema, reviewSchema } from "../schema.js";
 import ExpressError from "../utils/ExpressError.js";
 import Review from "../models/review.js";
 import Listing from "../models/listing.js";
+import {validateReview} from "../middleware.js";
 
-const validateReview = (req, res, next) => {
-  const result = reviewSchema.validate(req.body);  
-
-  if (result.error) {
-    let errMsg = result.error.details.map((el) => el.message).join(",");
-    throw new ExpressError(400, errMsg);
-  } else {
-    next();
-  }
-};
 
 //reviews
 router.post("/",validateReview,wrapAsync(async(req,res)=>{
