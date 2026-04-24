@@ -38,7 +38,7 @@ app.use(methodOverride("_method"));
 const sessionOption = {
     secret:"mysupersecretcode",
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie:{
         expires: Date.now() +7*24*60*60*1000,
         maxAge: 7*24*60*60*1000,
@@ -54,6 +54,11 @@ passport.use(new LocalStrategy(User.authenticate()));
 
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
+
+app.use((req, res, next) => {
+  res.locals.returnTo = req.session.returnTo;
+  next();
+});
 
 app.get("/",(req,res)=>{
     res.send("Working")

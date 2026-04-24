@@ -3,7 +3,7 @@ const router = express.Router({ mergeParams: true });
 import User from "../models/user.js";
 import wrapAsync from "../utils/wrapAsync.js";
 import passport, { Passport } from "passport";
-
+import { saveRedirectUrl } from "../middleware.js";
 
 router.get("/signup" ,(req,res)=>{
     res.render("users/signup.ejs");
@@ -20,7 +20,7 @@ router.post("/signup", wrapAsync(async(req,res)=>{
                 return next(err);
             }
             req.flash("success","Welcome to WanderLust");
-            res.redirect("/listings");
+            res.redirect(req.session.redirectUrl);
         })
         
     }
@@ -35,11 +35,22 @@ router.get("/login",(req,res)=>{
     res.render("users/login.ejs");
 })
 
-router.post("/login",passport.authenticate("local",{failureRedirect: '/login',failureFlash: true}),async(req,res)=>{
-    req.flash("success","Welcome back to Wanderlust")
-    res.redirect("/listings")
-})
+router.post("/login",
+  passport.authenticate("local", {
+    failureRedirect: "/login",
+    failureFlash: true
+  }),
+  (req, res) => {
 
+    const redirectUrl = res.locals.returnTo || "/listings";
+
+    delete req.session.returnTo;
+
+    console.log("Redirecting to:", redirectUrl);
+
+    res.redirect(redirectUrl);
+  }
+);
 router.get("/logout",(req,res,next)=>{
     req.logout((err)=>{
         if(err){
@@ -47,6 +58,7 @@ router.get("/logout",(req,res,next)=>{
         }
         req.flash("success","you are logged out now")
     })
+    res.redirect("/listings");
 })
 
 export default router;
