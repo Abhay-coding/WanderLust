@@ -10,33 +10,24 @@ import { isOwner ,validateListing} from "../middleware.js";
 import * as listingController from "../controllers/listings.js";
 
 
-router.get("/",wrapAsync(listingController.index)
-);
+router.route("/")
+.get(wrapAsync(listingController.index))
+.post(isLoggedIn,validateListing,wrapAsync(listingController.createLisiting));
+
 
 //New Route
 router.get("/new",isLoggedIn,listingController.renderNewForm);
 
-//Show Route
-router.get("/:id", wrapAsync(listingController.showListings));
 
+router.route("/:id")
+.get(wrapAsync(listingController.showListings))
+.put(isLoggedIn,isOwner,validateListing,wrapAsync(listingController.updateListing))
+.delete(isLoggedIn,isOwner,wrapAsync(listingController.destroyLising));
 
-
-//Create Route
-router.post("/",isLoggedIn,validateListing,wrapAsync(listingController.createLisiting)
-);
 
 
 //Edit Router
 router.get("/:id/edit",isLoggedIn,isOwner,wrapAsync(listingController.renderEditForm)
-);
-
-
-//Update Route
-router.put("/:id",isLoggedIn,isOwner,validateListing,wrapAsync(listingController.updateListing)
-);
-
-//delete route
-router.delete("/:id",isLoggedIn,isOwner,wrapAsync(listingController.destroyLising)
 );
 
 export default router;

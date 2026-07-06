@@ -6,19 +6,22 @@ import passport, { Passport } from "passport";
 import { saveRedirectUrl } from "../middleware.js";
 import * as userController from "../controllers/users.js";
 
-router.get("/signup" ,userController.renderSignup)
+router.route("/signup")
+.get(userController.renderSignup)
+.post(wrapAsync(userController.signup));
 
-router.post("/signup", wrapAsync(userController.signup));
-
-router.get("/login",userController.renderLogin)
-
-router.post("/login",
+router.route("/login")
+.get(userController.renderLogin)
+.post(
   passport.authenticate("local", {
     failureRedirect: "/login",
     failureFlash: true
   }),
   userController.login
 );
+
+
+
 router.get("/logout",userController.logout)
 
 export default router;
