@@ -7,32 +7,13 @@ import ExpressError from "../utils/ExpressError.js";
 import Review from "../models/review.js";
 import Listing from "../models/listing.js";
 import {validateReview,isLoggedIn,isReviewAuthor} from "../middleware.js";
+import * as reviewController from "../controllers/reviews.js";
 
 
 //reviews
-router.post("/",isLoggedIn,validateReview,wrapAsync(async(req,res)=>{
-
-    if (!req.body.review.comment || req.body.review.comment.trim() === "") {
-        throw new Error("Comment cannot be empty");
-    }
-    let listing = await Listing.findById(req.params.id);
-    let newReview = new Review(req.body.review);
-    newReview.author = req.user._id;
-    listing.reviews.push(newReview);
-
-    await newReview.save();
-    await listing.save();
-    req.flash("success","New Review Created !")
-    res.redirect(`/listings/${listing._id}`);
-}));
+router.post("/",isLoggedIn,validateReview,wrapAsync(reviewController.createReview));
 
 //Delete Review Route
-router.delete("/:reviewId",isLoggedIn,isReviewAuthor,wrapAsync(async(req,res)=>{
-    let {id,reviewId} = req.params;
-    Listing.findByIdAndUpdate(id, {$pull:{reviews:reviewId}});
-    await Review.findByIdAndDelete(reviewId);
-    req.flash("success","Review Deleted !")
-    res.redirect(`/listings/${id}`)
-}))
+router.delete("/:reviewId",isLoggedIn,isReviewAuthor,wrapAsync(reviewController.destroyReview))
 
 export default router;
