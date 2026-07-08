@@ -8,11 +8,20 @@ import Listing from "../models/listing.js";
 import { isLoggedIn } from "../middleware.js";
 import { isOwner ,validateListing} from "../middleware.js";
 import * as listingController from "../controllers/listings.js";
+import multer from "multer";
+
+const upload = multer({
+  dest: "uploads/",
+});
+
 
 
 router.route("/")
 .get(wrapAsync(listingController.index))
-.post(isLoggedIn,validateListing,wrapAsync(listingController.createLisiting));
+// .post(isLoggedIn,validateListing,wrapAsync(listingController.createLisiting));
+.post(upload.single('listing[image]'),(req,res)=>{
+    res.send(req.file);
+});
 
 
 //New Route
