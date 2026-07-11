@@ -1,3 +1,4 @@
+import dotenv from "dotenv";
 import express, { Router } from "express";
 import mongoose from 'mongoose';
 import path from "path";
@@ -13,7 +14,8 @@ import flash from "connect-flash";
 import passport, { Passport } from "passport";
 import LocalStrategy from "passport-local";
 import User from "./models/user.js";
- 
+
+dotenv.config();
 const app = express();
 app.engine('ejs',ejsMate);
 async function main() {

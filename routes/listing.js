@@ -7,22 +7,32 @@ import ExpressError from "../utils/ExpressError.js";
 import Listing from "../models/listing.js";
 import { isLoggedIn } from "../middleware.js";
 import { isOwner ,validateListing} from "../middleware.js";
+import { cloudinary, storage } from "../cloudConfig.js";
 import * as listingController from "../controllers/listings.js";
 import multer from "multer";
 
 const upload = multer({
-  dest: "uploads/",
+  storage
 });
 
 
 
 router.route("/")
 .get(wrapAsync(listingController.index))
-// .post(isLoggedIn,validateListing,wrapAsync(listingController.createLisiting));
-.post(upload.single('listing[image]'),(req,res)=>{
-    res.send(req.file);
-});
+.post((req, res, next) => {
+  upload.single("listing[image]")(req, res, (err) => {
+    if (err) {
+      console.error("UPLOAD ERROR:");
+      console.error(err);
+      return res.status(500).send(err.message);
+    }
 
+    console.log(req.file);
+    console.log(req.body);
+
+    res.send(req.file);
+  });
+});
 
 //New Route
 router.get("/new",isLoggedIn,listingController.renderNewForm);
