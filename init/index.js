@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import initData from "./data.js";
+import { data } from "./data.js";
 import Listing from "../models/listing.js";
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
@@ -13,9 +13,14 @@ main().catch((err) => console.log(err));
 
 const initDB = async () => {
   await Listing.deleteMany({});
-  initData.data = initData.data.map((obj)=>({...obj,owner: '69e9f931a417b77412c07eb2'}))
-  await Listing.insertMany(initData.data);
-  console.log("data was initialized");
-};
 
+  const listings = data.map((obj) => ({
+    ...obj,
+    owner: "69e9f931a417b77412c07eb2",
+  }));
+
+  await Listing.insertMany(listings);
+
+  console.log("Data was initialized");
+};
 initDB();
