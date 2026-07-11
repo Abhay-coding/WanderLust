@@ -19,21 +19,7 @@ const upload = multer({
 
 router.route("/")
 .get(wrapAsync(listingController.index))
-.post((req, res, next) => {
-  upload.single("listing[image]")(req, res, (err) => {
-    if (err) {
-      console.error("UPLOAD ERROR:");
-      console.error(err);
-      return res.status(500).send(err.message);
-    }
-
-    console.log(req.file);
-    console.log(req.body);
-
-    res.send(req.file);
-  });
-});
-
+.post(isLoggedIn,upload.single("listing[image]"),validateListing,wrapAsync(listingController.createLisiting));
 //New Route
 router.get("/new",isLoggedIn,listingController.renderNewForm);
 
