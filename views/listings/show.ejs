@@ -1,5 +1,5 @@
 <% layout("layouts/boilerplate.ejs")%>
-<body>
+
     <div class="row mt-3">
         <div class="col-8 offset-3">
             <h3><%= listing.title%></h3>
@@ -28,6 +28,36 @@
         </form>
         </div>
   <% } %>
+  <br> <br>
+    
+  <% layout("layouts/boilerplate.ejs")%>
+
+<div class="col-8 offset-3 mb-4">
+        <hr/>
+        <h4>Where You'll be</h4>
+        <div id="map"></div>
+        <script>
+            var map = L.map('map').setView([28.6139, 77.2090], 13);
+
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap contributors'
+            }).addTo(map);
+            var marker = L.marker([28.6139, 77.2090]).addTo(map);
+            marker.bindPopup("<b>Here</b><br>").openPopup();
+            var popup = L.popup();
+
+            function onMapClick(e) {
+                popup
+                    .setLatLng(e.latlng)
+                    .setContent("You clicked the map at " + e.latlng.toString())
+                    .openOn(map);
+            }
+
+            map.on('click', onMapClick);
+        </script>
+
+            
+    </div>
     
   
     <div class="col-8 offset-3 mb-3" >
@@ -67,11 +97,16 @@
             </div>
             <button class="btn btn-outline-dark">Submit</button>
         </form>
-        <hr/>
+        
         <%}%> 
         
-        <h4>All Reviews</h4>
+        
+
+        <% if(listing.reviews.length>0) { %>
+
         <div class="row">
+        <hr/>
+        <h4>All Reviews</h4>
         <% for(review of listing.reviews){%>
             <div class="card col-5 ms-3 mb-3">
                 <div class="card-body">
@@ -85,9 +120,9 @@
             </div>
         <%}%>
         </div>
+        <%}%>
         
     </div>
 
     
     
-</body>

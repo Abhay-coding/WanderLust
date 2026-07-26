@@ -103,3 +103,16 @@ body{
     padding-left: 0;
     padding-right: 0;
 }
+
+#map { 
+    height: 500px;
+    width:400px;
+    width: 100%;
+    border-radius: 12px;
+ }
+
+
+.mapitem{
+    display: flex;
+    justify-content: center;
+}
