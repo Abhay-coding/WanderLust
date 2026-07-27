@@ -5,33 +5,32 @@ const API_KEY = process.env.ARCGIS_API_KEY;
 
 async function geocodeLocation(location) {
     try {
-        console.log(API_KEY);
-
         const response = await axios.get(
             "https://geocode-api.arcgis.com/arcgis/rest/services/World/GeocodeServer/findAddressCandidates",
             {
                 params: {
                     f: "json",
-                    token: API_KEY,
+                    token: API_KEY, // or apiKey if token doesn't work
                     singleLine: location,
                     maxLocations: 1,
                 },
             }
         );
 
-        console.log(response.data);
-
         if (!response.data.candidates || response.data.candidates.length === 0) {
-            console.log("Location not found");
-            return;
+            throw new Error("Location not found");
         }
 
         const { x, y } = response.data.candidates[0].location;
 
-        console.log("Latitude:", y);
-        console.log("Longitude:", x);
+        return {
+            type: "Point",
+            coordinates: [x, y] // [longitude, latitude]
+        };
+
     } catch (err) {
         console.log(err.response?.data || err.message);
+        return null;
     }
 }
 
@@ -76,7 +75,10 @@ export const createLisiting = async(req,res,next)=>{
     let filename = req.file.filename;
 
     const newListing = new Listing(req.body.listing);
-    await geocodeLocation(newListing.location);
+    const geometry = await geocodeLocation(newListing.location);
+
+    console.log(geometry);
+    newListing.geometry = geometry;
 
     newListing.owner = req.user._id;
     newListing.image = { url, filename };

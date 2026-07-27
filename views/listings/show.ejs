@@ -1,4 +1,7 @@
 <% layout("layouts/boilerplate.ejs")%>
+<script>
+    const coordinates = <%- JSON.stringify(listing.geometry.coordinates) %>;
+</script>
 
     <div class="row mt-3">
         <div class="col-8 offset-3">
@@ -32,18 +35,27 @@
     
   <% layout("layouts/boilerplate.ejs")%>
 
-<div class="col-8 offset-3 mb-4">
+    <div class="col-8 offset-3 mb-4">
         <hr/>
         <h4>Where You'll be</h4>
+
         <div id="map"></div>
+
         <script>
-            var map = L.map('map').setView([28.6139, 77.2090], 13);
+            // GeoJSON stores [longitude, latitude]
+            const lat = coordinates[1];
+            const lng = coordinates[0];
+
+            var map = L.map('map').setView([lat, lng], 13);
 
             L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '&copy; OpenStreetMap contributors'
             }).addTo(map);
-            var marker = L.marker([28.6139, 77.2090]).addTo(map);
-            marker.bindPopup("<b>Here</b><br>").openPopup();
+
+            var marker = L.marker([lat, lng]).addTo(map);
+
+            marker.bindPopup("<b><%= listing.title %></b>").openPopup();
+
             var popup = L.popup();
 
             function onMapClick(e) {
@@ -55,8 +67,6 @@
 
             map.on('click', onMapClick);
         </script>
-
-            
     </div>
     
   
