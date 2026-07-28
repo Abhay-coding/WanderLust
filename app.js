@@ -62,9 +62,9 @@ app.use((req, res, next) => {
   next();
 });
 
-app.get("/",(req,res)=>{
-    res.send("Working")
-});
+// app.get("/",(req,res)=>{
+//     res.send("Working")
+// });
 
 app.use((req, res, next) => {
   res.locals.currUser = req.user;
