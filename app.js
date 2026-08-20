@@ -14,6 +14,7 @@ import flash from "connect-flash";
 import passport, { Passport } from "passport";
 import LocalStrategy from "passport-local";
 import User from "./models/user.js";
+import MongoStore from "connect-mongo";
 
 dotenv.config();
 const app = express();
@@ -46,7 +47,21 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 
+const store = MongoStore.create({
+    mongoUrl: process.env.ATLASDB_URL,
+    crypto: {
+        secret: "mysupersecretcode"
+    },
+    touchAfter: 24*3600,
+
+});
+
+store.on("error",()=>{
+    console.log("Error in Mongo Session Store",err);
+});
+
 const sessionOption = {
+    store: store,
     secret:"mysupersecretcode",
     resave: false,
     saveUninitialized: false,
