@@ -18,14 +18,23 @@ import User from "./models/user.js";
 dotenv.config();
 const app = express();
 app.engine('ejs',ejsMate);
+
+console.log(process.env.ATLASDB_URL)
 async function main() {
-  await mongoose.connect('mongodb://127.0.0.1:27017/wanderlust');
+  await mongoose.connect(process.env.ATLASDB_URL);
 }
 main()  
-    .then((res)=>{
-        console.log("Connection Succesful");
+    .then(()=>{
+        console.log("Connection Successful");
+        app.listen(8080, () => {
+            console.log("server is listening to port 8080");
+        });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+        console.log("Database connection error:", err);
+        process.exit(1);
+    });
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -67,14 +76,14 @@ app.use((req, res, next) => {
 // });
 
 app.use((req, res, next) => {
-  res.locals.currUser = req.user;
-  next();
+  res.locals.currUser = req.user,
+  next()
 });
 
 app.use((req,res,next)=>{
     res.locals.success = req.flash("success"),
     res.locals.error = req.flash("error"),
-    res.locals.curUser = req.user,
+    res.locals.currUser = req.user,
     next();
 })
 
