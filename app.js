@@ -50,7 +50,7 @@ app.use(methodOverride("_method"));
 const store = MongoStore.create({
     mongoUrl: process.env.ATLASDB_URL,
     crypto: {
-        secret: "mysupersecretcode"
+        secret: process.env.SECRET,
     },
     touchAfter: 24*3600,
 
@@ -62,7 +62,7 @@ store.on("error",()=>{
 
 const sessionOption = {
     store: store,
-    secret:"mysupersecretcode",
+    secret:process.env.SECRET,
     resave: false,
     saveUninitialized: false,
     cookie:{
